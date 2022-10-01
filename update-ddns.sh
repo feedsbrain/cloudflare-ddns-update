@@ -13,7 +13,7 @@ else
   echo "API URL: $CF_API_URL"
   echo "------------------------------------------------"
 
-  curl -X PATCH "$CF_API_URL" \
+  curl --http1.1 -X PATCH "$CF_API_URL" \
       -H "Authorization: Bearer $AUTH_TOKEN" \
       -H "Content-Type: application/json" \
       --data "{\"type\":\"A\",\"name\":\"$CF_RECORD_NAME\",\"content\":\"$DDNS_IP_ADDRESS\",\"ttl\":300,\"proxied\":false}"
