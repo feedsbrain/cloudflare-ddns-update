@@ -15,6 +15,6 @@ else
   echo "PATCH DATA: $CF_PATCH_DATA"
   echo "------------------------------------------------"
 
-  curl --http1.1 -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" --data $CF_PATCH_DATA $CF_API_URL
+  curl --http1.1 -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -H 'Accept: application/json' --data "$CF_PATCH_DATA" "$CF_API_URL"
 fi
 
