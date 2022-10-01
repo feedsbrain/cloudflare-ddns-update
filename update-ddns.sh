@@ -11,11 +11,9 @@ else
   echo "------------------------------------------------"
   echo "Updating DDNS Record to IP: $DDNS_IP_ADDRESS ..."
   echo "API URL: $CF_API_URL"
+  echo "TOKEN: $AUTH_TOKEN"
   echo "------------------------------------------------"
 
-  curl --http1.1 -X PATCH "$CF_API_URL" \
-      -H "Authorization: Bearer $AUTH_TOKEN" \
-      -H "Content-Type: application/json" \
-      --data "{\"type\":\"A\",\"name\":\"$CF_RECORD_NAME\",\"content\":\"$DDNS_IP_ADDRESS\",\"ttl\":300,\"proxied\":false}"
+  curl --http1.1 -X PATCH "$CF_API_URL" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" --data "{\"type\":\"A\",\"name\":\"$CF_RECORD_NAME\",\"content\":\"$DDNS_IP_ADDRESS\",\"ttl\":300,\"proxied\":false}"
 fi
 
