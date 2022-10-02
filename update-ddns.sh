@@ -13,26 +13,15 @@ if [[ -z $AUTH_TOKEN || -z $CF_ZONE_ID || -z $CF_RECORD_ID || -z $CF_RECORD_NAME
 else
   DDNS_IP_ADDRESS="$(curl -s ifconfig.me)"
   CF_API_URL="https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records/$CF_RECORD_ID"
-
-  # generating post request data
-  generate_post_data()
-  {
-cat <<EOF
-  {
-    "type":"A",
-    "name":"$CF_RECORD_NAME",
-    "content":"$DDNS_IP_ADDRESS",
-    "ttl": 300,
-    "proxied": false
-  }
-EOF
-  }
+  CF_REQUEST_PAYLOAD="{\"type\":\"A\", \"name\":\"$CF_RECORD_NAME\", \"content\":\"$DDNS_IP_ADDRESS\", \"ttl\": 300, \"proxied\": false}"
 
   echo "------------------------------------------------"
   echo "Updating DDNS Record to IP: $DDNS_IP_ADDRESS ..."
   echo "API URL: $CF_API_URL"
   echo "------------------------------------------------"
+  echo "Payload: $CF_REQUEST_PAYLOAD"
+  echo "------------------------------------------------"
 
-  curl --http1.1 -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -H 'Accept: application/json' --data "$(generate_post_data)" "$CF_API_URL"
+  curl --http1.1 -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -H 'Accept: application/json' --data "$CF_REQUEST_PAYLOAD" "$CF_API_URL"
 fi
 
