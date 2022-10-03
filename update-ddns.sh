@@ -11,17 +11,32 @@ if [[ -z $AUTH_TOKEN || -z $CF_ZONE_ID || -z $CF_RECORD_ID || -z $CF_RECORD_NAME
   echo "Required environment variable is not set ..."
   echo "--------------------------------------------"
 else
+  CURRENT_IP_ADDRESS="-"
+
+  # read from .current_ip if exist
+  if test -f ".current_ip"; then
+    CURRENT_IP_ADDRESS=$(cat .current_ip)
+  fi
   DDNS_IP_ADDRESS="$(curl -s ifconfig.me)"
-  CF_API_URL="https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records/$CF_RECORD_ID"
-  CF_REQUEST_PAYLOAD="{\"type\":\"A\", \"name\":\"$CF_RECORD_NAME\", \"content\":\"$DDNS_IP_ADDRESS\", \"ttl\": 300, \"proxied\": false}"
+  echo "Current IP: $CURRENT_IP_ADDRESS, DDNS IP: $DDNS_IP_ADDRESS"
 
-  echo "------------------------------------------------"
-  echo "Updating DDNS Record to IP: $DDNS_IP_ADDRESS ..."
-  echo "API URL: $CF_API_URL"
-  echo "------------------------------------------------"
-  echo "Payload: $CF_REQUEST_PAYLOAD"
-  echo "------------------------------------------------"
+  if [ "$DDNS_IP_ADDRESS" != "$CURRENT_IP_ADDRESS" ]; then
+    CF_API_URL="https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/dns_records/$CF_RECORD_ID"
+    CF_REQUEST_PAYLOAD="{\"type\":\"A\", \"name\":\"$CF_RECORD_NAME\", \"content\":\"$DDNS_IP_ADDRESS\", \"ttl\": 300, \"proxied\": false}"
 
-  curl --http1.1 -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -H 'Accept: application/json' --data "$CF_REQUEST_PAYLOAD" "$CF_API_URL"
+    echo "------------------------------------------------"
+    echo "Updating DDNS Record to IP: $DDNS_IP_ADDRESS ..."
+    echo "API URL: $CF_API_URL"
+    echo "------------------------------------------------"
+    echo "Payload: $CF_REQUEST_PAYLOAD"
+    echo "------------------------------------------------"
+
+    curl --http1.1 -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -H 'Accept: application/json' --data "$CF_REQUEST_PAYLOAD" "$CF_API_URL"
+    echo $DDNS_IP_ADDRESS > .current_ip
+  else
+    echo "---------------------------------------------------------"
+    echo "No changes in current IP Address. Skipping DNS update ..."
+    echo "---------------------------------------------------------"
+  fi
 fi
 
