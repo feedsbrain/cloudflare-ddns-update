@@ -2,7 +2,7 @@
 Custom K8s Cron Image to Update CloudFlare Record for DDNS
 
 ```bash
-$ docker run --env-file ./.env --rm -it cloudflare-ddns-update:latest /bin/bash -c /cron/update-ddns.sh
+$ docker run --env-file ./.env --rm -it feedsbrain/cloudflare-ddns-update:latest /bin/bash -c /cron/update-ddns.sh
 ```
 
 Example of `.env` file:
