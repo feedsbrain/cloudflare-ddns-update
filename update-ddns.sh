@@ -14,8 +14,8 @@ else
   CURRENT_IP_ADDRESS="-"
 
   # read from .current_ip if exist
-  if test -f ".current_ip"; then
-    CURRENT_IP_ADDRESS=$(cat .current_ip)
+  if test -f "./config/.current_ip"; then
+    CURRENT_IP_ADDRESS=$(cat ./config/.current_ip)
   fi
   DDNS_IP_ADDRESS="$(curl -s ifconfig.me)"
   echo "Current IP: $CURRENT_IP_ADDRESS, DDNS IP: $DDNS_IP_ADDRESS"
@@ -32,7 +32,7 @@ else
     echo "------------------------------------------------"
 
     curl --http1.1 -X PATCH -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -H 'Accept: application/json' --data "$CF_REQUEST_PAYLOAD" "$CF_API_URL"
-    echo $DDNS_IP_ADDRESS > .current_ip
+    echo $DDNS_IP_ADDRESS > ./config/.current_ip
   else
     echo "---------------------------------------------------------"
     echo "No changes in current IP Address. Skipping DNS update ..."
